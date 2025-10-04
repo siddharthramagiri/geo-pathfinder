@@ -43,20 +43,19 @@ public class PathfindingService {
         Graph graph = new Graph();
         BaseGraph baseGraph = (BaseGraph) hopper.getBaseGraph();
         NodeAccess nodeAccess = baseGraph.getNodeAccess();
-        log.info("================================== BEFORE FIRST FOR LOOP ==========================================");
+        log.info("================================== BEFORE BUILDING CUSTOM GRAPH ==========================================");
 
         for (int i = 0; i < baseGraph.getNodes(); i++) {
             Node node = new Node(String.valueOf(i), nodeAccess.getLat(i), nodeAccess.getLon(i));
             graph.addNode(node);
         }
-        log.info("================================ AFTER FIRST FOR LOOP ============================================");
 
         EdgeIterator iter;
         for (int nodeId = 0; nodeId < baseGraph.getNodes(); nodeId++) {
             iter = baseGraph.createEdgeExplorer().setBaseNode(nodeId);
             Node fromNode = graph.getNode(String.valueOf(nodeId));
 
-            log.info("================================ INSIDE FOR LOOP ============================================");
+//            log.info("================================ INSIDE FOR LOOP ============================================");
             while (iter.next()) {
                 int toId = iter.getAdjNode();
                 Node toNode = graph.getNode(String.valueOf(toId));
