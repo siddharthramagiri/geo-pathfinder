@@ -101,7 +101,7 @@
         <div class="p-6">
             <div class="flex items-center justify-between mb-6">
                 <div>
-                    <h1 class="text-2xl font-bold text-blue-600">Path Finder</h1>
+                    <h1 class="text-2xl font-bold text-blue-600">Geo Path Finder</h1>
                     <p class="text-sm text-gray-600">Visualize the Shortest-Route using Graph Data Structure</p>
                     <br/>
                     <p class="text-sm text-gray-400"> ⚠️ Select only inside the Telangana Region, Developed with limited area for the Memory Efficiency </p>
@@ -137,8 +137,8 @@
                         </label>
                         <div>
                             <label class="text-sm block mb-1">Speed (ms)</label>
-                            <input type="range" id="animSpeed" min="10" max="200" value="50" class="w-full">
-                            <span id="speedValue" class="text-xs text-gray-500">50ms</span>
+                            <input type="range" id="animSpeed" min="10" max="200" value="20" class="w-full">
+                            <span id="speedValue" class="text-xs text-gray-500">20ms</span>
                         </div>
                     </div>
                 </div>
@@ -214,7 +214,7 @@
 
 <script>
     const API_BASE_URL = 'http://localhost:8080/api';
-    const RADAR_RADIUS = 1000;
+    const RADAR_RADIUS = 3000;
 
     let map;
     let startMarker = null;
@@ -280,7 +280,7 @@
                 radarCircle = null;
                 console.log('End point set');
             } else {
-                alert('Please select an end point within the 1 km radius (blue circle).');
+                alert(`Please select an end point within the ${RADAR_RADIUS/1000} km radius (blue circle).`);
             }
         }
     }

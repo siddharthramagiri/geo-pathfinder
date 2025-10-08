@@ -1,4 +1,4 @@
-# PathFinding Visualizer Documentation
+# Geographic PathFinding Visualizer Documentation
 ### Project Overview
 It is an educational application that visualizes pathfinding algorithms on real-world maps. It allows users to see how different algorithms (Best First Search, A*, Dijkstra) explore nodes and find optimal paths between two points.
 
