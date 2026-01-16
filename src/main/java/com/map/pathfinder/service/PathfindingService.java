@@ -25,13 +25,14 @@ public class PathfindingService {
     @PostConstruct
     public void init() {
         hopper = new GraphHopper();
-        hopper.setOSMFile(new File("src/main/resources/data/telangana-latest.osm.pbf").getAbsolutePath());
+//        hopper.setOSMFile(new File("src/main/resources/data/telangana-latest.osm.pbf").getAbsolutePath());
         hopper.setGraphHopperLocation("graph-cache");
 
         Profile carProfile = new Profile("car").setVehicle("car").setWeighting("custom");
         hopper.setProfiles(carProfile);
 
-        hopper.importOrLoad();
+//        hopper.importOrLoad();
+        hopper.load();
         log.info("GraphHopper initialized successfully\nBuilding Custom Graph");
 
         // Convert GraphHopper graph into our custom Graph

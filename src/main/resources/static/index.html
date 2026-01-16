@@ -137,7 +137,7 @@
                         </label>
                         <div>
                             <label class="text-sm block mb-1">Speed (ms)</label>
-                            <input type="range" id="animSpeed" min="10" max="200" value="20" class="w-full">
+                            <input type="range" id="animSpeed" min="0" max="200" value="20" class="w-full">
                             <span id="speedValue" class="text-xs text-gray-500">20ms</span>
                         </div>
                     </div>
@@ -213,7 +213,7 @@
 </div>
 
 <script>
-    const API_BASE_URL = 'http://localhost:8080/api';
+    const API_BASE_URL = '/api';
     const RADAR_RADIUS = 3000;
 
     let map;
@@ -226,7 +226,7 @@
     function initMap() {
         console.log('Initializing map...');
 
-        // Initialize map with Mumbai coordinates
+        // Initialize map with Hyderabad coordinates
         map = L.map('map', {
             center: [17.3850, 78.4867],
             zoom: 13,
