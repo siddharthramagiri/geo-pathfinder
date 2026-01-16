@@ -8,7 +8,7 @@ WORKDIR /app
 COPY target/pathfinder-0.0.1-SNAPSHOT.jar app.jar
 
 # Copy the prebuilt GraphHopper cache (built locally once)
-COPY customGraph.ser /app/customGraph.ser
+#COPY customGraph.ser /app/customGraph.ser
 COPY data/telangana-latest.osm.pbf /app/data/
 COPY graph-cache/ /app/graph-cache/
 
