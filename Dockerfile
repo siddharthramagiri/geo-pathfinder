@@ -1,39 +1,38 @@
-# Use a very small and efficient JRE image
-FROM eclipse-temurin:17-jre-alpine
+# ===============================
+# Stage 1: Build the application
+# ===============================
+FROM maven:3.9.6-eclipse-temurin-21 AS builder
 
-# Set working directory
 WORKDIR /app
 
-# Copy only the built Spring Boot JAR
-COPY target/pathfinder-0.0.1-SNAPSHOT.jar app.jar
+# Cache dependencies
+COPY pom.xml .
+RUN mvn -q -e -B dependency:go-offline
 
-# Copy the prebuilt GraphHopper cache (built locally once)
-#COPY customGraph.ser /app/customGraph.ser
-COPY data/telangana-latest.osm.pbf /app/data/
-COPY graph-cache/ /app/graph-cache/
+# Copy source and build
+COPY src ./src
+RUN mvn -q -DskipTests package
 
-# (Optional) Copy other small static files if your app needs them
-# COPY src/main/resources/static /app/static
 
-# Set environment variables
-ENV SERVER_PORT=8080
-ENV SERVER_ADDRESS=0.0.0.0
+# ===============================
+# Stage 2: Run the application
+# ===============================
+FROM eclipse-temurin:21-jre
 
-# Limit JVM memory so it fits Render's 512 MB cap
-#ENV JAVA_OPTS="-Xmx300m -Xms200m -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
-ENV JAVA_OPTS="-Xmx480m -Xms256m -XX:+UseContainerSupport -XX:MaxRAMPercentage=90.0"
+WORKDIR /app
 
-# Optimize startup & disable unused Spring features
-ENV SPRING_MAIN_LAZY_INITIALIZATION=true
-ENV SPRING_JMX_ENABLED=false
-ENV SPRING_MAIN_BANNER_MODE=off
+# Copy built jar
+COPY --from=builder /app/target/*.jar app.jar
 
-# Expose port
+# Copy OSM data into container
+COPY data/telangana-latest.osm.pbf /data/telangana.osm.pbf
+
+# GraphHopper cache (Render persistent disk)
+VOLUME ["/graph-cache"]
+
+# JVM tuning (Render-friendly)
+ENV JAVA_OPTS="-Xms512m -Xmx1024m -XX:+UseG1GC"
+
 EXPOSE 8080
 
-# Clean up unnecessary files to shrink image
-RUN rm -rf /var/cache/apk/* && \
-    find /app/graph-cache -type f -name "*.tmp" -delete
-
-# Start the application
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]

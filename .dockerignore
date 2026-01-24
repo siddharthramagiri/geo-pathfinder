@@ -1,0 +1,5 @@
+target/
+.graphhopper/
+node_modules/
+.git/
+graph-cache/

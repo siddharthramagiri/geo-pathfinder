@@ -1,79 +1,61 @@
 package com.map.pathfinder.algorithm;
 
-import com.map.pathfinder.model.*;
+import com.graphhopper.storage.BaseGraph;
+import com.graphhopper.util.EdgeExplorer;
+import com.graphhopper.util.EdgeIterator;
+import com.map.pathfinder.dto.PathResult;
+
 import java.util.*;
 
 public class DijkstraAlgorithm {
+    public static PathResult find(BaseGraph graph, int start, int end) {
 
-    public static PathResult findPath(Graph graph, Node start, Node end) {
-        Map<Node, Double> distances = new HashMap<>();
-        Map<Node, Node> previous = new HashMap<>();
-        PriorityQueue<NodeDistance> queue = new PriorityQueue<>(
-                Comparator.comparingDouble(NodeDistance::getDistance)
-        );
-        List<Node> visitedOrder = new ArrayList<>();
-        Set<Node> visited = new HashSet<>();
+        Map<Integer, Double> dist = new HashMap<>();
+        Map<Integer, Integer> parent = new HashMap<>();
+        List<Integer> visitedOrder = new ArrayList<>();
 
-        // Initialize
-        for (Node node : graph.getNodes()) {
-            distances.put(node, Double.POSITIVE_INFINITY);
-        }
-        distances.put(start, 0.0);
-        queue.offer(new NodeDistance(start, 0.0));
+        PriorityQueue<int[]> pq = new PriorityQueue<>(Comparator.comparingDouble(a -> a[1]));
 
-        while (!queue.isEmpty()) {
-            NodeDistance current = queue.poll();
-            Node currentNode = current.getNode();
+        pq.add(new int[]{start, 0});
+        dist.put(start, 0.0);
 
-            if (visited.contains(currentNode)) continue;
+        EdgeExplorer explorer = graph.createEdgeExplorer();
 
-            visited.add(currentNode);
-            visitedOrder.add(currentNode);
+        while (!pq.isEmpty()) {
+            int[] curr = pq.poll();
+            int node = curr[0];
 
-            if (currentNode.equals(end)) {
-                break;
-            }
+            if (visitedOrder.contains(node)) continue;
+            visitedOrder.add(node);
 
-            for (Edge edge : graph.getNeighbors(currentNode)) {
-                Node neighbor = edge.getTarget();
-                double newDist = distances.get(currentNode) + edge.getWeight();
+            if (node == end) break;
 
-                if (newDist < distances.get(neighbor)) {
-                    distances.put(neighbor, newDist);
-                    previous.put(neighbor, currentNode);
-                    queue.offer(new NodeDistance(neighbor, newDist));
+            EdgeIterator it = explorer.setBaseNode(node);
+            while (it.next()) {
+                int next = it.getAdjNode();
+                double newDist = dist.get(node) + it.getDistance();
+
+                if (newDist < dist.getOrDefault(next, Double.MAX_VALUE)) {
+                    dist.put(next, newDist);
+                    parent.put(next, node);
+                    pq.add(new int[]{next, (int) newDist});
                 }
             }
         }
 
-        // Reconstruct path
-        List<Node> path = reconstructPath(previous, start, end);
-
-        return new PathResult(path, visitedOrder, distances.get(end));
+        List<Integer> path = reconstructPath(parent, start, end);
+        return new PathResult(path, visitedOrder, dist.getOrDefault(end, 0.0));
     }
 
-    private static List<Node> reconstructPath(Map<Node, Node> previous, Node start, Node end) {
-        List<Node> path = new ArrayList<>();
-        Node current = end;
+    private static List<Integer> reconstructPath(Map<Integer, Integer> parent, int start, int end) {
+        LinkedList<Integer> path = new LinkedList<>();
+        Integer curr = end;
 
-        while (current != null) {
-            path.add(0, current);
-            current = previous.get(current);
+        while (curr != null) {
+            path.addFirst(curr);
+            curr = parent.get(curr);
         }
 
-        return path.isEmpty() || !path.get(0).equals(start) ? new ArrayList<>() : path;
-    }
-
-    private static class NodeDistance {
-        private final Node node;
-        private final double distance;
-
-        public NodeDistance(Node node, double distance) {
-            this.node = node;
-            this.distance = distance;
-        }
-
-        public Node getNode() { return node; }
-        public double getDistance() { return distance; }
+        return path.getFirst() == start ? path : List.of();
     }
 }
