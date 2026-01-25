@@ -1,82 +1,192 @@
 # Geographic PathFinding Visualizer Documentation
+[Live Link](https://geo-pathfinder-frontend.vercel.app/)
 ### Project Overview
-It is an educational application that visualizes pathfinding algorithms on real-world maps. It allows users to see how different algorithms (Best First Search, A*, Dijkstra) explore nodes and find optimal paths between two points.
+**Geo PathFinder** is a full-stack, real-time geographic pathfinding platform that visualizes classical graph algorithms on real-world maps and enables **live collaboration between users inside rooms**.
 
 ## Screenshots
 - Using **Dijkstra** Algorithm
+  ![img_2.png](img_2.png)
+
+
+- Using **A-Star** Algorithm
   ![img_1.png](img_1.png)
 
 
-- Using **Best First Search** Algorithm
-  ![img_2.png](img_2.png)
+Users can:
 
-  
-#### Tech Stack:
-- **Backend:** Java 17, Spring Boot 3.x
-- **Frontend:** HTML5, JavaScript, Leaflet.js, Tailwind CSS
-- **Map Data:** OpenStreetMap (OSM)
+* Visualize **A***, **Dijkstra**, and **Best-First Search** algorithms on OpenStreetMap data
+* Create and join rooms
+* Share paths and locations **in real time**
+* Scale real-time events using **Apache Kafka**
+* Chat and collaborate using **WebSockets**
 
-#### Prerequisites
-**Backend Requirements**
-- Java 17 or higher
-- Maven 3.6+
-- Internet connection (for OSM data)
+The project is designed with **production-grade architecture**, focusing on performance, scalability, and clean system design.
 
-**Frontend Requirements**
-- Modern web browser (Chrome, Firefox, Safari, Edge)
-- Internet connection (for map tiles)
+---
 
-### Installation
-1. Clone or Create Project Directory
-    ```angular2html
-       git clone https://github.com/siddharthramagiri/pathfinder.git
-       cd pathfinder-main
-    ```
-2. Setup
-    ```angular2html
-    directory/
-    ├── data/
-    │   └── telangana-latest.osm.pbf
-    ├── graph-cache/ (cache of Map data to reduce computation)
-    ├── src/
-    │   └── main/
-    │       ├── java/com/map/pathfinder/
-    │       │   ├── PathfinderApplication.java
-    │       │   ├── config/
-    │       │   │   └── CorsConfig.java
-    │       │   ├── controller/
-    │       │   │   └── PathfindingController.java
-    │       │   ├── service/
-    │       │   │   └── PathfindingService.java
-    │       │   ├── algorithm/
-    │       │   │   ├── AStarAlgorithm.java
-    │       │   │   ├── DijkstraAlgorithm.java
-    │       │   │   ├── BestFirstSearchAlgorithm.java
-    │       │   │   └── PathResult.java
-    │       │   ├── model/
-    │       │   │   ├── Graph.java
-    │       │   │   ├── Node.java
-    │       │   │   └── Edge.java
-    │       │   └── dto/
-    │       │       ├── PathRequest.java
-    │       │       ├── PathResponse.java
-    │       │       └── Coordinate.java
-    │       └── resources/
-    │           └── application.properties
-    │           └── static/
-    │               └── index.html (Frontend File)
-    │
-    └── pom.xml
-    ```
 
-3. Start Application
-    ```angular2html
-    mvn clean install
-    mvn spring-boot:run
-    ```
-   
-4. Open Link
-    ```
-       http://localhost:8080/index.html
-    ```
-   
+### Production Ready
+
+* Spring Boot 3 + Java 17
+* Next.js frontend
+* Postgres SQL Database to manage rooms 
+* Deployed on **AWS EC2**
+
+---
+
+---
+
+## Tech Stack
+
+### Backend
+
+* **Java 17**
+* **Spring Boot 3.x**
+* **Spring WebSocket**
+* **Apache Kafka**
+* **GraphHopper (OSM data)**
+* **Docker**
+
+### Frontend
+
+* **Next.js (App Router)**
+* **TypeScript**
+* **Leaflet.js**
+* **Tailwind CSS**
+
+### Infrastructure
+
+* **AWS EC2**
+* **Docker**
+* **Encrypt (HTTPS)**
+
+---
+
+## Project Structure
+
+```
+project-root/
+├── data/
+│   └── telangana-latest.osm.pbf
+│
+├── graph-cache/
+│   └── (cached map/graph data)
+│
+├── src/
+│   └── main/
+│       ├── java/
+│       │   └── com/map/pathfinder/
+│       │       ├── PathfinderApplication.java
+│       │       │
+│       │       ├── algorithm/
+│       │       │   ├── AStarAlgorithm.java
+│       │       │   ├── BestFirstSearchAlgorithm.java
+│       │       │   └── DijkstraAlgorithm.java
+│       │       │
+│       │       ├── config/
+│       │       │   └── WebSocketConfig.java
+│       │       │
+│       │       ├── controller/
+│       │       │   ├── ChatController.java
+│       │       │   ├── PathfindingController.java
+│       │       │   ├── PublicController.java
+│       │       │   └── RoomController.java
+│       │       │
+│       │       ├── dto/
+│       │       │   ├── Coordinate.java
+│       │       │   ├── PathRequest.java
+│       │       │   ├── PathResponse.java
+│       │       │   ├── PathResult.java
+│       │       │   └── roomDto/
+│       │       │       ├── CreateRoomRequest.java
+│       │       │       └── JoinRoomRequest.java
+│       │       │
+│       │       ├── model/
+│       │       │   ├── ChatMessage.java
+│       │       │   ├── Edge.java
+│       │       │   ├── Graph.java
+│       │       │   ├── Location.java
+│       │       │   ├── Node.java
+│       │       │   └── Room.java
+│       │       │
+│       │       ├── repository/
+│       │       │   ├── ChatMessageRepository.java
+│       │       │   ├── LocationRepository.java
+│       │       │   └── RoomRepository.java
+│       │       │
+│       │       └── service/
+│       │           ├── ChatService.java
+│       │           ├── KafkaConsumerService.java
+│       │           ├── KafkaProducerService.java
+│       │           ├── PathfindingService.java
+│       │           └── RoomService.java
+│       │
+│       └── resources/
+│           └── application.properties
+│
+├── pom.xml
+└── README.md
+
+```
+
+---
+
+## 🔧 Prerequisites
+
+### Backend
+
+* Java 17+
+* Maven 3.8+
+* Docker
+* OSM `.pbf` map file
+
+### Frontend
+
+* Next.js 18+
+* npm / pnpm
+
+---
+
+## Backend Setup
+
+### Clone Repository
+
+```bash
+git clone https://github.com/siddharthramagiri/geo-pathfinder.git
+cd geo-pathfinder/backend
+```
+
+### Environment Variables
+
+```env
+DATASOURCE_URL={DATABASE_URL}
+DATASOURCE_USERNAME={DATABASE_USERNAME}
+DATASOURCE_PASSWORD={DATABASE_PASSWORD};
+OSM_FILE_PATH=/data/telangana.osm.pbf
+GRAPH_CACHE_PATH=/graph-cache
+```
+
+### Run Backend
+
+```bash
+mvn clean package -DskipTests
+java -jar target/app.jar
+```
+
+Backend runs on:
+
+```
+http://localhost:8080
+```
+
+---
+
+## Learning Outcomes
+
+* Implemented graph algorithms on real geographic data
+* Designed scalable real-time systems using **Kafka**
+* Built WebSocket-based collaboration features
+* Deployed and secured applications with HTTPS on **AWS EC2 Instance**
+* Optimized memory-heavy graph processing
+* Designed production-ready backend/frontend separation
+
