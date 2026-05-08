@@ -7,8 +7,9 @@ import com.map.pathfinder.dto.PathResult;
 
 import java.util.*;
 
-public class DijkstraAlgorithm {
-    public static PathResult find(BaseGraph graph, int start, int end) {
+public class DijkstraAlgorithm implements Algorithm {
+    @Override
+    public PathResult find(BaseGraph graph, int start, int end) {
 
         Map<Integer, Double> dist = new HashMap<>();
         Map<Integer, Integer> parent = new HashMap<>();

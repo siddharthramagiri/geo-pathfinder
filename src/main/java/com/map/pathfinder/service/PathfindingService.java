@@ -1,6 +1,7 @@
 package com.map.pathfinder.service;
 
 import com.graphhopper.GraphHopper;
+import com.graphhopper.GraphHopperConfig;
 import com.graphhopper.config.Profile;
 import com.graphhopper.routing.util.EdgeFilter;
 import com.graphhopper.storage.BaseGraph;
@@ -32,30 +33,38 @@ public class PathfindingService {
     @Value("${graphhopper.graph-cache}")
     private String graphCachePath;
 
+    public static void main_importOnly() { }
+
     @PostConstruct
     public void init() {
+        log.info("OSM file path: {}", osmFilePath);
+        log.info("Graph cache path: {}", graphCachePath);
+        GraphHopperConfig config = new GraphHopperConfig();
+        config.putObject("graph.dataaccess", "MMAP");
+        config.putObject("datareader.file", osmFilePath);
+        config.putObject("graph.location", graphCachePath);
 
-        hopper = new GraphHopper();
-
-        hopper.setOSMFile(osmFilePath);
-        hopper.setGraphHopperLocation(graphCachePath);
-
-        CustomModel customModel = new CustomModel();
+        config.putObject("import.osm.ignored_highways", "elevator,bus_guideway,raceway,proposed,planned,abandoned,platform,construction");
 
         Profile profile = new Profile("car")
                 .setVehicle("car")
                 .setWeighting("custom")
-                .setCustomModel(customModel);
+                .setCustomModel(new CustomModel());
 
-        hopper.setProfiles(profile);
+        config.setProfiles(List.of(profile));
+        config.setCHProfiles(List.of());
+        config.setLMProfiles(List.of());
 
-        // Disable CH for simplicity (recommended for custom algorithms)
-        hopper.getCHPreparationHandler().setCHProfiles();
+        hopper = new GraphHopper();
+        hopper.init(config);
+
+        hopper.setOSMFile(osmFilePath);
+        hopper.setGraphHopperLocation(graphCachePath);
 
         boolean loaded = hopper.load();
         if (!loaded) {
-            log.info("Graph cache not found or incompatible. Importing OSM...");
-            hopper.importOrLoad();
+            throw new IllegalStateException("Graph cache not found at: " + graphCachePath +
+                        ". Rebuild the Docker image to regenerate the graph cache.");
         }
 
         this.graph = hopper.getBaseGraph();
@@ -66,11 +75,10 @@ public class PathfindingService {
             throw new IllegalStateException("LocationIndex not initialized");
         }
 
-        log.info("GraphHopper initialized successfully | Nodes={}", graph.getNodes());
+        log.info("GraphHopper loaded | Nodes={}", graph.getNodes());
     }
 
     public PathResponse calculatePath(PathRequest request) {
-
         int startNode = findClosestNode(
                 request.getStartLat(), request.getStartLon()
         );
@@ -78,21 +86,8 @@ public class PathfindingService {
                 request.getEndLat(), request.getEndLon()
         );
 
-        PathResult result;
-
-        switch (request.getAlgorithm().toLowerCase()) {
-            case "astar":
-                result = AStarAlgorithm.find(graph, startNode, endNode);
-                break;
-            case "dijkstra":
-                result = DijkstraAlgorithm.find(graph, startNode, endNode);
-                break;
-            case "best":
-                result = BestFirstSearchAlgorithm.find(graph, startNode, endNode);
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown algorithm");
-        }
+        Algorithm algorithm = AlgorithmFactory.getAlgorithm(request.getAlgorithm());
+        PathResult result = algorithm.find(graph, startNode, endNode);
 
         return toResponse(result);
     }

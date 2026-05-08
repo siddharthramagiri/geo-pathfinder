@@ -7,8 +7,9 @@ import com.graphhopper.util.EdgeExplorer;
 import com.graphhopper.util.EdgeIterator;
 import com.map.pathfinder.dto.PathResult;
 
-public class AStarAlgorithm {
-    public static PathResult find(BaseGraph graph, int start, int end) {
+public class AStarAlgorithm implements Algorithm {
+    @Override
+    public PathResult find(BaseGraph graph, int start, int end) {
 
         NodeAccess nodeAccess = graph.getNodeAccess();
         EdgeExplorer explorer = graph.createEdgeExplorer();

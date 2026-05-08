@@ -8,10 +8,10 @@ import com.graphhopper.util.EdgeIterator;
 import com.map.pathfinder.dto.PathResult;
 
 
-public class BestFirstSearchAlgorithm {
+public class BestFirstSearchAlgorithm implements Algorithm {
     private record NodeHeuristic(int nodeId, double heuristic) {}
 
-    public static PathResult find(BaseGraph graph, int start, int end) {
+    public PathResult find(BaseGraph graph, int start, int end) {
 
         NodeAccess nodeAccess = graph.getNodeAccess();
         EdgeExplorer explorer = graph.createEdgeExplorer();

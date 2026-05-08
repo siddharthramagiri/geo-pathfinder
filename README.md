@@ -79,6 +79,8 @@ project-root/
 │       │       ├── PathfinderApplication.java
 │       │       │
 │       │       ├── algorithm/
+│       │       │   ├── Algorithm.java
+│       │       │   ├── AlgorithmFactory.java
 │       │       │   ├── AStarAlgorithm.java
 │       │       │   ├── BestFirstSearchAlgorithm.java
 │       │       │   └── DijkstraAlgorithm.java

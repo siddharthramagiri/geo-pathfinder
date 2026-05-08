@@ -30,9 +30,23 @@
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
+		<!-- Add to your existing spring-boot-starter-web dependency to
+     replace heavyweight Tomcat with lighter Undertow -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- Undertow uses ~15MB less than Tomcat at idle -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-undertow</artifactId>
 		</dependency>
 
 		<dependency>
